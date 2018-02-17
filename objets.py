@@ -1,7 +1,7 @@
 ### - objets.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 10/07/2017
+Date de la dernière édition du fichier : 13/07/2017
 """
 
 ### import ###
@@ -11,18 +11,47 @@ from pygame.locals import *
 class Objets :
 
     def __init__(self, fenetre, largeurObj, hauteurObj, vitesse, objet) :
+        self.largeurObj = largeurObj
+        self.hauteurObj = hauteurObj
         self.vitesse = vitesse
+        self.objet = objet
 
-        self.posDepX = random.randint(- 2*largeurObj, fenetre.getTailleFenetreL() + largeurObj)
-        self.posDepY = - hauteurObj
-        self.posArrX = random.randint(0, fenetre.getTailleFenetreL() - largeurObj)
+        self.posDepX = random.randint(- 2*self.largeurObj, fenetre.getTailleFenetreL() + self.largeurObj)
+        self.posDepY = - self.hauteurObj
+        self.posArrX = random.randint(0, fenetre.getTailleFenetreL() - self.largeurObj)
         self.posArrY = fenetre.getTailleFenetreH()
 
         self.posActX = self.posDepX
         self.posActY = self.posDepY
 
-    def setVitesse(vitesse) :
+    def setVitesse(self, vitesse) :
         self.vitesse = vitesse
+
+    def hitbox(self) :
+        self.hautGaucheX = self.posActX + (self.largeurObj / 15)
+        self.hautGaucheY = self.posActY + (self.hauteurObj / 5)
+        self.basDroitX = self.posActX + self.largeurObj  - (self.largeurObj / 15)
+        self.basDroitY = self.posActY + self.hauteurObj  - (self.hauteurObj / 10)
+        return (self.hautGaucheX, self.hautGaucheY, self.basDroitX, self.basDroitY)
+
+    def afficherHitbox(self, fenetre) :
+        pygame.draw.line(fenetre.getWindow(), (255,0,0), (self.hitbox()[0], self.hitbox()[1]), (self.hitbox()[0], self.hitbox()[3]))
+        pygame.draw.line(fenetre.getWindow(), (255,0,0), (self.hitbox()[2], self.hitbox()[1]), (self.hitbox()[2], self.hitbox()[3]))
+        pygame.draw.line(fenetre.getWindow(), (255,0,0), (self.hitbox()[0], self.hitbox()[1]), (self.hitbox()[2], self.hitbox()[1]))
+        pygame.draw.line(fenetre.getWindow(), (255,0,0), (self.hitbox()[0], self.hitbox()[3]), (self.hitbox()[2], self.hitbox()[3]))
+
+    def horsCadre(self, fenetre) :
+        if self.posActY > fenetre.getTailleFenetreH() :
+            return True
+        return False
+
+    def afficherObj(self, fenetre) :
+        fenetre.getWindow().blit(self.objet, (self.posActX, self.posActY))
+
+    def actualiserObj(self, fenetre) :
+        self.posActY += self.vitesse
+        self.posActX = int(((self.posArrX - self.posDepX)*self.posActY + (self.posArrY - self.posDepY)*self.posDepX - (self.posArrX - self.posDepX)*self.posDepY) / (self.posArrY - self.posDepY))        
+        self.afficherObj(fenetre)
 
 class Asteroide(Objets) :
 
@@ -37,24 +66,4 @@ class Asteroide(Objets) :
 
         Objets.__init__(self, fenetre, self.largeurAst, self.hauteurAst, vitesse, self.asteroide)
 
-        self.afficherAst(fenetre)
-
-    def hitbox(self) :
-        self.hautGaucheX = self.posActX + (self.largeurAst / 15)
-        self.hautGaucheY = self.posActY + (self.hauteurAst / 5)
-        self.basDroitX = self.posActX + self.largeurAst - (self.largeurAst / 15)
-        self.basDroitY = self.posActY + self.hauteurAst - (self.hauteurAst / 10)
-        return (self.hautGaucheX, self.hautGaucheY, self.basDroitX, self.basDroitY)
-
-    def horsCadre(self, fenetre) :
-        if self.posActY > fenetre.getTailleFenetreH() :
-            return True
-        return False
-
-    def afficherAst(self, fenetre) :
-        fenetre.getWindow().blit(self.asteroide, (self.posActX, self.posActY))
-
-    def actualiserAst(self, fenetre) :
-        self.posActY += self.vitesse
-        self.posActX = int(((self.posArrX - self.posDepX)*self.posActY + (self.posArrY - self.posDepY)*self.posDepX - (self.posArrX - self.posDepX)*self.posDepY) / (self.posArrY - self.posDepY))        
-        self.afficherAst(fenetre)
+        self.afficherObj(fenetre)

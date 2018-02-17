@@ -2,12 +2,12 @@
 Nom : Jet Pack Game
 Présentation du jeu (à venir)
 Par Jordan Courné
-Version : 0.1 ( Pré-Pré-Pré Alpha)
+Version : 0.2 ( Pré-Pré Alpha)
 """
 ### - main.py - ###
 """
 Date de la création du fichier : 03/07/2017
-Date de la dernière édition du fichier : 11/07/2017
+Date de la dernière édition du fichier : 19/07/2017
 """
 
 ### import ###
@@ -17,49 +17,53 @@ from pygame.locals import *
 import time
 from window import Window
 from character import Character
-from game import Event
-from game import Collision
+from game import Event, Collision, Temps, Texte
 from objets import Asteroide
+from menu import Menu
 
 ### Main ###
 tailleFenetreLargeur = 1300
-hauteurPersonnage = 40
-hauteurAsteroide = 300
-vitesseObjet = 1.2
-# Gestion très provisoire du temps
-timeReference = int(time.time()*100)/100
-tempsPrecedent = 0
-tempsAct = 0
-#
+hauteurPersonnage = int(tailleFenetreLargeur / 32.5) # égal à 40   quand tailleFenetreLargeur = 1300
+hauteurAsteroide = int(tailleFenetreLargeur / 4.3333) # environ égal à 300 quand tailleFenetreLargeur = 1300
+vitesseObjet = tailleFenetreLargeur / 1083.3333 # environ égal à 1.2 quand tailleFenetreLargeur = 1300
+vitessePerso = tailleFenetreLargeur / 650 # environ égal à 2 quand tailleFenetreLargeur = 1300
+
 # Gestion très provisoire du temps d'apparition des asteroides
 tempsDap = 3
-temps2P = 0
-temps4P = 0
+tempsEcoule = Temps()
+tempsEcoule.startChrono()
 #
 
 fenetre = Window(tailleFenetreLargeur)
-character = Character(tailleFenetreLargeur, hauteurPersonnage, fenetre)
+character = Character(tailleFenetreLargeur, hauteurPersonnage, vitessePerso, fenetre)
 listAsteroide = []
-listAsteroide.append(Asteroide(tailleFenetreLargeur, hauteurAsteroide, vitesseObjet, fenetre))
-
-evenement = Event()
-collision = Collision()
 
 repeat = True
-##Merde, coder avec le cul mais ca marche ( à changer)
-nbOccurence = 0
-time1 = False
+##Merde, coder avec le cul mais ca marche (à changer)
+time1 = True
 x = 0.0005
+score = 0
 #
+menu = Menu(tailleFenetreLargeur, fenetre)
+menu.afficherMenu(fenetre)
+fenetre.actualiser()
+
+choix = 0
+#la boucle est provisoire :
+while choix != 1 :
+    choix = menu.selection(fenetre)
+    if choix == 1 :
+        pass
+    elif choix == 2 :
+        pass #options
+    else :
+        fenetre.fermerFenetre()
+        exit()
+
 while repeat == True :
-    #Merde, coder avec le cul mais ca marche ( à changer)
-    nbOccurence +=1
+    #Merde, coder avec le cul mais ca marche (à changer)
+    score += 1
     tempsDap -= x
-    if tempsDap < 0.3 :
-        tempsDap = 0.3
-        if time1 == False :
-            print("Beau Score, bravo !")
-        time1 = True
 
     if tempsDap < 2 :
         x = 0.0004
@@ -69,25 +73,25 @@ while repeat == True :
         x = 0.0001
     if tempsDap < 0.5 :
         x = 0.00005
-    if tempsDap <= 0.3 :
+    if tempsDap <= 0.3 and time1 :
         x = 0.00002
+        print("Beau Score, bravo !")
+        time1 = False
 
     #print(x)
     #print(tempsDap)
     
-    if tempsDap < temps2P :
+    if tempsDap < tempsEcoule.tempsEcoule() :
         listAsteroide.append(Asteroide(tailleFenetreLargeur, hauteurAsteroide, vitesseObjet, fenetre))
-        temps4P = tempsAct
-
-    temps2P = tempsAct - temps4P
+        tempsEcoule.startChrono() 
     #
 
-    repeat = evenement.obsevateurEvenement()
+    Event.obsevateurEvenement(fenetre)
     fenetre.afficherFond()
     character.actualiserPerso(fenetre)
 
     for asteroide in listAsteroide :
-        asteroide.actualiserAst(fenetre)
+        asteroide.actualiserObj(fenetre)
 
     ## Ecris vite fait, a modifier
     listeElementASupprime = []
@@ -98,54 +102,37 @@ while repeat == True :
     for i in listeElementASupprime :
         del listAsteroide[i]
     #
-
-    """# Test
+    
+    """#Affichage Hitbox
     for asteroide in listAsteroide :
-        pygame.draw.line(fenetre.getWindow(), (255,0,0), (asteroide.hitbox()[0], asteroide.hitbox()[1]), (asteroide.hitbox()[0], asteroide.hitbox()[3]))
-        pygame.draw.line(fenetre.getWindow(), (255,0,0), (asteroide.hitbox()[2], asteroide.hitbox()[1]), (asteroide.hitbox()[2], asteroide.hitbox()[3]))
-        pygame.draw.line(fenetre.getWindow(), (255,0,0), (asteroide.hitbox()[0], asteroide.hitbox()[1]), (asteroide.hitbox()[2], asteroide.hitbox()[1]))
-        pygame.draw.line(fenetre.getWindow(), (255,0,0), (asteroide.hitbox()[0], asteroide.hitbox()[3]), (asteroide.hitbox()[2], asteroide.hitbox()[3]))
-
-    pygame.draw.line(fenetre.getWindow(), (0,255,0), (character.hitbox()[0], character.hitbox()[1]), (character.hitbox()[0], character.hitbox()[3]))
-    pygame.draw.line(fenetre.getWindow(), (0,255,0), (character.hitbox()[2], character.hitbox()[1]), (character.hitbox()[2], character.hitbox()[3]))
-    pygame.draw.line(fenetre.getWindow(), (0,255,0), (character.hitbox()[0], character.hitbox()[1]), (character.hitbox()[2], character.hitbox()[1]))
-    pygame.draw.line(fenetre.getWindow(), (0,255,0), (character.hitbox()[0], character.hitbox()[3]), (character.hitbox()[2], character.hitbox()[3]))
-    #Si tu supprime ces lignes, supprime aussi import pygame :)"""
+        asteroide.afficherHitbox(fenetre)
+    character.afficherHitbox(fenetre)"""
 
     for asteroide in listAsteroide :
-        if collision.collision(character.hitbox(), asteroide.hitbox()) :
+        if Collision.collision(character.hitbox(), asteroide.hitbox()) :
             # Gestion extremement provisoire du game over
             repeat = False
             #
             pass
-        elif collision.collision(asteroide.hitbox(), character.hitbox()) :
+        elif Collision.collision(asteroide.hitbox(), character.hitbox()) :
             # Gestion extremement provisoire du game over
             repeat = False
             #
             pass
-
-    # Gestion très provisoire du temps
-    tempsAct = int((time.time() - timeReference)*100)/100
-    if tempsAct != tempsPrecedent :
-        tempsPrecedent = tempsAct
-    #
     
     fenetre.actualiser()
     time.sleep(0.0003)
 
 #totalement porvisoire
-# Gestion extremement provisoire du game over
-gameover = pygame.Surface((500,400))
-gameover.fill((255,0,0))
-fenetre.getWindow().blit(gameover, (400, 200))
-# Gestion très provisoire du texte/police
-texte = pygame.font.Font(None, int(fenetre.getTailleFenetreL()/20))
-score = texte.render("Score Joueur : " + str(tempsAct),1,(0,0,0),(255,0,0))
-fenetre.getWindow().blit(score,(fenetre.getTailleFenetreL()/3,fenetre.getTailleFenetreH()/3))
-messageGO = texte.render("Game Over",1,(0,0,0),(255,0,0))
-fenetre.getWindow().blit(messageGO,(fenetre.getTailleFenetreL()/3,fenetre.getTailleFenetreH()/2))
+# Gestion provisoire du texte/police/game over
+score = Texte("Score Joueur : " + str(int(score/100)),(0,0,0), int(fenetre.getTailleFenetreL()/25),(int(fenetre.getTailleFenetreL()/3),int(fenetre.getTailleFenetreH()/3))) 
+score.afficherTexte(fenetre)
+messageGO = Texte("Game Over",(0,0,0), int(fenetre.getTailleFenetreL()/25),(int(fenetre.getTailleFenetreL()/3),int(fenetre.getTailleFenetreH()/2)))
+messageGO.afficherTexte(fenetre)
 fenetre.actualiser()
 #
 repeat = True
 while repeat :
-    repeat = evenement.obsevateurEvenement()
+    Event.obsevateurEvenement(fenetre)
+
+fenetre.fermerFenetre()

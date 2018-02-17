@@ -1,7 +1,7 @@
 ### - window.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 05/07/2017
+Date de la dernière édition du fichier : 18/07/2017
 """
 
 ### import ###
@@ -22,7 +22,9 @@ class Window :
             #Fond
         self.fondBleute = (233,248,255)
         pygame.draw.rect(self.window, self.fondBleute, (0,0, self.tailleFenetreL, self.tailleFenetreH))
-        self.actualiser()
+
+    def fermerFenetre(self) :
+        pygame.quit()
 
     def afficherFond(self) :
         pygame.draw.rect(self.window, self.fondBleute, (0,0, self.tailleFenetreL, self.tailleFenetreH))

@@ -1,7 +1,7 @@
 ### - character.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 10/07/2017
+Date de la dernière édition du fichier : 18/07/2017
 """
 
 ### import ###
@@ -10,12 +10,12 @@ from pygame.locals import *
 
 class Character :
     
-    def __init__(self, tailleFenetreLargeur, hauteurPersonnage, fenetre) :
+    def __init__(self, tailleFenetreLargeur, hauteurPersonnage, vitessePerso, fenetre) :
         self.charac = pygame.image.load("perso 1.png").convert_alpha()
 
         self.posPersoX = int(tailleFenetreLargeur/5)
         self.posPersoY = int(tailleFenetreLargeur/5)
-        self.vitesse = 2
+        self.vitesse = vitessePerso
 
         self.hauteurPerso = self.charac.get_height()
         self.largeurPerso = self.charac.get_width()
@@ -31,6 +31,12 @@ class Character :
         self.basDroitX = self.posPersoX + self.largeurPerso - (self.largeurPerso / 15)
         self.basDroitY = self.posPersoY + self.hauteurPerso
         return (self.hautGaucheX, self.hautGaucheY, self.basDroitX, self.basDroitY)
+
+    def afficherHitbox(self, fenetre) :
+        pygame.draw.line(fenetre.getWindow(), (0,255,0), (self.hitbox()[0], self.hitbox()[1]), (self.hitbox()[0], self.hitbox()[3]))
+        pygame.draw.line(fenetre.getWindow(), (0,255,0), (self.hitbox()[2], self.hitbox()[1]), (self.hitbox()[2], self.hitbox()[3]))
+        pygame.draw.line(fenetre.getWindow(), (0,255,0), (self.hitbox()[0], self.hitbox()[1]), (self.hitbox()[2], self.hitbox()[1]))
+        pygame.draw.line(fenetre.getWindow(), (0,255,0), (self.hitbox()[0], self.hitbox()[3]), (self.hitbox()[2], self.hitbox()[3]))
 
     def afficherPerso(self, fenetre) :
         fenetre.getWindow().blit(self.charac, (self.posPersoX, self.posPersoY))
