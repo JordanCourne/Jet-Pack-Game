@@ -1,24 +1,23 @@
 ### - generateur.py - ###
 """
 Date de la création du fichier : 24/07/2017
-Date de la dernière édition du fichier : 27/07/2017
+Date de la dernière édition du fichier : 19/08/2017
 """
 
 ### import ###
 import pygame, random
 from pygame.locals import *
 
-from objets import Asteroide
+from objets import Asteroide, Acide
 from game import Temps
 
 class Generateur() :
 
-    def __init__(self, hauteurAsteroide, vitesseObjet) :
-        self.asteroideImage = pygame.image.load("asteroide.png").convert_alpha()
-        self.listAsteroide = []
+    objetImage = None
 
-        self.hauteurObjet = hauteurAsteroide
-        self.vitesseObjet = vitesseObjet
+    def __init__(self, typeObjet) :
+        self.listObjet = []
+        self.nombreObjetParSeconde = 0.3
 
         self.tempsNiveau = Temps()
         self.tempsNiveau.startChrono()
@@ -26,37 +25,63 @@ class Generateur() :
         self.tempsAttente = Temps()
         self.tempsAttente.setTempsRefence(10)
 
-        self.nombreAsteroideParSeconde = 0.3
+        self.changerTypeObjet(typeObjet)
 
-    def creerAsteroide(self, fenetre) :
-        self.listAsteroide.append(Asteroide(self.asteroideImage, fenetre, self.hauteurObjet, self.vitesseObjet))
-        
-    def regulerAsteroide(self, fenetre) :
-        listeElementASupprime = []
-        for i in range(len(self.listAsteroide)) :
-            if self.listAsteroide[i].horsCadre(fenetre) :
-                listeElementASupprime.append(i)
+    def changerTypeObjet(self, typeObjet) :
+        self.typeObjet = typeObjet
+        if self.typeObjet == "ASTEROIDE" :
+            self.objetImage = pygame.image.load("asteroide.png").convert_alpha()
+        elif self.typeObjet == "ACIDE" :
+            self.objetImage = pygame.image.load("Pluie acide.png").convert_alpha()
+        self.tempsNiveau.startChrono()
+        self.nombreObjetParSeconde = 0.3
 
-        for i in listeElementASupprime :
-            del self.listAsteroide[i]
+    def creerObjet(self, fenetre, posX = None) :
+        if self.typeObjet == "ASTEROIDE" :
+            self.listObjet.append(Asteroide(self.objetImage, fenetre))
+        elif self.typeObjet == "ACIDE" :
+            self.listObjet.append(Acide(self.objetImage, fenetre, posX))
 
-    def actualiserAsteroide(self, fenetre, dt) :
-        for asteroide in self.listAsteroide :
-            asteroide.actualiserObj(fenetre, dt)
+    def regulerObjet(self, fenetre) :
+        for i in range(len(self.listObjet)) :
+            if self.listObjet[i].horsCadre(fenetre) :
+                del self.listObjet[i]
+                self.regulerObjet(fenetre)
+                break
 
-    def afficherHitboxAsteroide(self, fenetre) :
-        for asteroide in self.listAsteroide :
-            asteroide.afficherHitbox(fenetre)
+    def actualiserObjet(self, fenetre, dt) :
+        for objets in self.listObjet:
+            objets.actualiserObj(fenetre, dt)
 
-    def getListAsteroide(self) :
-        return self.listAsteroide
+    def afficherHitboxObjet(self, fenetre) :
+        for objets in self.listObjet :
+            objets.afficherHitbox(fenetre)
+
+    def getListObjet(self) :
+        return self.listObjet
+
+    def genererObjet(self, fenetre) :
+        if self.typeObjet == "ASTEROIDE" :
+            self.genererAsteroide(fenetre)
+        elif self.typeObjet == "ACIDE" :
+            self.genererAcide(fenetre)
 
     def genererAsteroide(self, fenetre) :
-        self.nombreAsteroideParSeconde = 0.03 * int(self.tempsNiveau.tempsEcoule() /10) * 10  + 0.25
-        if self.nombreAsteroideParSeconde != 0 :
-            if self.tempsAttente.tempsEcoule() >= (1/self.nombreAsteroideParSeconde) :
+        self.nombreObjetParSeconde = 0.03 * int(self.tempsNiveau.tempsEcoule() /10) * 10  + 0.25
+        if self.nombreObjetParSeconde != 0 :
+            if self.tempsAttente.tempsEcoule() >= (1/self.nombreObjetParSeconde) :
                 self.tempsAttente.startChrono()
-                self.creerAsteroide(fenetre)
+                self.creerObjet(fenetre)
+
+    def genererAcide(self, fenetre) :
+        self.nombreObjetParSeconde = 0.06 * int(self.tempsNiveau.tempsEcoule() /10) * 10  + 0.4
+        if self.nombreObjetParSeconde != 0 :
+            if self.tempsAttente.tempsEcoule() >= (1/self.nombreObjetParSeconde) :
+                self.tempsAttente.startChrono()
+                posX = random.randint(0, fenetre.getTailleFenetreL())
+                nbPluie = random.randint(1, 3)
+                for i in range(nbPluie) :
+                    self.creerObjet(fenetre, posX)
 
     def stopGeneration(self) :
         self.tempsNiveau.stopChrono()

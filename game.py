@@ -1,7 +1,7 @@
 ### - game.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 16/08/2017
+Date de la dernière édition du fichier : 18/08/2017
 """
 
 ### import ###
@@ -13,7 +13,14 @@ class Event :
     
     def __init__(self) :
         pass
-    
+
+    def observateurQuit(fenetre) :
+        for event in pygame.event.get() :
+            if event.type == QUIT :
+                print("Fermeture de la fenêtre")
+                fenetre.fermerFenetre()
+                quit()
+                
     def obsevateurEvenement(fenetre) :
         for event in pygame.event.get() :
             if event.type == QUIT :
@@ -100,14 +107,18 @@ class Temps :
 
 class Texte : 
 
-    def __init__(self, texteAAfficher, couleur, police, position) :
-        self.texte = pygame.font.Font("ArchitectsDaughter.ttf", police)
+    def __init__(self, texteAAfficher, couleur, taillePolice, position) :
+        self.texte = pygame.font.Font("ArchitectsDaughter.ttf", taillePolice)
         self.texteRendu = self.texte.render(texteAAfficher, True, couleur)
         self.position = position
         # posX et posY correspondent au milieu de l'image !
 
     def afficherTexte(self, fenetre) :
         fenetre.getWindow().blit(self.texteRendu, self.position)
+
+    def centrerProsition(self) :
+        self.position[0] -= (self.hitbox()[2] - self.hitbox()[0]) / 2
+        self.position[1] -= (self.hitbox()[3] - self.hitbox()[1]) / 2
 
     def hitbox(self) :
         self.hautGaucheX = self.position[0]

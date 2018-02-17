@@ -1,7 +1,7 @@
 ### - objets.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 26/07/2017
+Date de la dernière édition du fichier : 18/08/2017
 """
 
 ### import ###
@@ -55,15 +55,43 @@ class Objets :
 
 class Asteroide(Objets) :
 
-    def __init__(self, asteroide, fenetre, hauteurAsteroide, vitesse) :
+    def __init__(self, asteroide, fenetre) :
         self.asteroide = asteroide
+        hauteurChercher = int(fenetre.getTailleFenetreL() / 4.3333) # environ égal à 300 quand tailleFenetreLargeur = 1300
+        self.vitesse = fenetre.getTailleFenetreL() / 3.6109 # environ égal à 360 quand tailleFenetreLargeur = 1300 et vitessePerso environ égal à 600
 
         self.hauteurAst = self.asteroide.get_height()
         self.largeurAst = self.asteroide.get_width()
-        self.asteroide = pygame.transform.smoothscale(self.asteroide, (hauteurAsteroide, int(hauteurAsteroide * self.hauteurAst / self.largeurAst)))
+        self.asteroide = pygame.transform.smoothscale(self.asteroide, (hauteurChercher, int(hauteurChercher * self.hauteurAst / self.largeurAst)))
         self.hauteurAst = self.asteroide.get_height()
         self.largeurAst = self.asteroide.get_width()
 
-        Objets.__init__(self, fenetre, self.largeurAst, self.hauteurAst, vitesse, self.asteroide)
+        Objets.__init__(self, fenetre, self.largeurAst, self.hauteurAst, self.vitesse, self.asteroide)
 
+        self.afficherObj(fenetre)
+
+class Acide(Objets) :
+
+    def __init__(self, acide, fenetre, posX) :
+        self.objet = acide
+        hauteurAcide = int(fenetre.getTailleFenetreL() / 20) # environ égal à 65 quand tailleFenetreLargeur = 1300
+        self.vitesse = fenetre.getTailleFenetreL() / 2.5 # environ égal à 360 quand tailleFenetreLargeur = 1300 et vitessePerso environ égal à 600
+
+        self.hauteurAcide = self.objet.get_height()
+        self.largeurAcide = self.objet.get_width()
+        self.objet = pygame.transform.smoothscale(self.objet, (hauteurAcide, int(hauteurAcide * self.hauteurAcide / self.largeurAcide)))
+        self.largeurObj = self.objet.get_width()
+        self.hauteurObj = self.objet.get_height()
+
+        if posX == None :
+            self.posActX  = random.randint(-self.largeurObj, fenetre.getTailleFenetreL())
+        else :
+            self.posActX = random.randint(- 2*self.largeurObj, 2*self.largeurObj) + posX - (self.largeurObj/2)
+        self.posActY = random.randint(- 4*self.hauteurObj, -self.hauteurObj)
+
+        self.afficherObj(fenetre)
+
+    def actualiserObj(self, fenetre, dt) :
+        self.posActY += self.vitesse * dt
+        #self.posActX = self.posActX
         self.afficherObj(fenetre)

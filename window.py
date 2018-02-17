@@ -1,7 +1,7 @@
 ### - window.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 16/08/2017
+Date de la dernière édition du fichier : 24/09/2017
 """
 
 ### import ###
@@ -23,16 +23,20 @@ class Window :
         self.fondBleute = (215,250,255)
         self.fondRouge = (255,215,250)
         self.fondVert = (250,255,215)
-        pygame.draw.rect(self.window, self.fondBleute, (0,0, self.tailleFenetreL, self.tailleFenetreH))
+        self.fondTerre = pygame.image.load("Fond Terre.png").convert()
+        self.fondTerre = pygame.transform.smoothscale(self.fondTerre, (self.tailleFenetreL, self.tailleFenetreH))
+        self.fondVenus = pygame.image.load("Fond Venus.png").convert()
+        self.fondVenus = pygame.transform.smoothscale(self.fondVenus, (self.tailleFenetreL, self.tailleFenetreH))
+        self.window.blit(self.fondTerre, (0,0))
 
     def fermerFenetre(self) :
         pygame.quit()
 
     def afficherFond(self, niveau) :
         if niveau == 1 :
-            pygame.draw.rect(self.window, self.fondBleute, (0,0, self.tailleFenetreL, self.tailleFenetreH))
+            self.window.blit(self.fondTerre, (0,0))
         elif niveau == 2 :
-            pygame.draw.rect(self.window, self.fondVert, (0,0, self.tailleFenetreL, self.tailleFenetreH))
+            self.window.blit(self.fondVenus, (0,0))
         elif niveau == 3 :
             pygame.draw.rect(self.window, self.fondRouge, (0,0, self.tailleFenetreL, self.tailleFenetreH))
         else :
