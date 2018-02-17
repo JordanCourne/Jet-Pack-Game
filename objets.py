@@ -1,7 +1,7 @@
 ### - objets.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 13/07/2017
+Date de la dernière édition du fichier : 26/07/2017
 """
 
 ### import ###
@@ -48,19 +48,19 @@ class Objets :
     def afficherObj(self, fenetre) :
         fenetre.getWindow().blit(self.objet, (self.posActX, self.posActY))
 
-    def actualiserObj(self, fenetre) :
-        self.posActY += self.vitesse
+    def actualiserObj(self, fenetre, dt) :
+        self.posActY += self.vitesse * dt
         self.posActX = int(((self.posArrX - self.posDepX)*self.posActY + (self.posArrY - self.posDepY)*self.posDepX - (self.posArrX - self.posDepX)*self.posDepY) / (self.posArrY - self.posDepY))        
         self.afficherObj(fenetre)
 
 class Asteroide(Objets) :
 
-    def __init__(self, tailleFenetreLargeur, hauteurAsteroide, vitesse, fenetre) :
-        self.asteroide = pygame.image.load("asteroide.png").convert_alpha()
+    def __init__(self, asteroide, fenetre, hauteurAsteroide, vitesse) :
+        self.asteroide = asteroide
 
         self.hauteurAst = self.asteroide.get_height()
         self.largeurAst = self.asteroide.get_width()
-        self.asteroide = pygame.transform.scale(self.asteroide, (hauteurAsteroide, int(hauteurAsteroide * self.hauteurAst / self.largeurAst)))
+        self.asteroide = pygame.transform.smoothscale(self.asteroide, (hauteurAsteroide, int(hauteurAsteroide * self.hauteurAst / self.largeurAst)))
         self.hauteurAst = self.asteroide.get_height()
         self.largeurAst = self.asteroide.get_width()
 

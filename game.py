@@ -1,7 +1,7 @@
 ### - game.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 19/07/2017
+Date de la dernière édition du fichier : 25/07/2017
 """
 
 ### import ###
@@ -19,26 +19,23 @@ class Event :
             if event.type == QUIT :
                 print("Fermeture de la fenêtre")
                 fenetre.fermerFenetre()
-                exit()
+                quit()
             if event.type == MOUSEBUTTONUP and event.button == 1 :
                 return (True, event.pos[0], event.pos[1], event.pos[0], event.pos[1])
             if event.type == MOUSEMOTION :
                 return (False, event.pos[0], event.pos[1], event.pos[0], event.pos[1])
         return (None, None, None, None, None)
 
-    """def hiboxSourisClick() :
+    def evenementPause(fenetre) :
         for event in pygame.event.get() :
-            if event.type == MOUSEBUTTONUP and event.button == 1 :
-                return (event.pos[0], event.pos[1], event.pos[0], event.pos[1])
-            if event.type == MOUSEMOTION  and event.buttons[0] == 1 :
-                return (event.pos[0], event.pos[1], event.pos[0], event.pos[1])
-        return None
-
-    def hiboxSourisMouvement() :
-        for event in pygame.event.get() :
-            if event.type == MOUSEMOTION :
-                return (event.pos[0], event.pos[1], event.pos[0], event.pos[1])
-        return None"""
+            if event.type == QUIT :
+                print("Fermeture de la fenêtre")
+                fenetre.fermerFenetre()
+                quit()
+            if event.type == KEYDOWN and event.key == K_p :
+                return True
+        return False
+            
 
 class Collision :
 
@@ -63,14 +60,25 @@ class Temps :
 
     def __init__(self) :
         self.tempsReference = 0
+        self.tempsStoppe = int(time.time() * 10000)/10000
 
     def startChrono(self) :
-        self.tempsReference = int(time.time() * 1000)/1000
+        self.tempsReference = int(time.time() * 10000)/10000
+        self.tempsStoppe = int(time.time() * 10000)/10000
+
+    def stopChrono(self) :
+        self.tempsStoppe = int(time.time() * 10000)/10000
+
+    def reprendreChrono(self) :
+        self.tempsReference += int(time.time() * 10000)/10000 - self.tempsStoppe
 
     def tempsEcoule(self) :
-        self.tempsNouveau = int(time.time() * 1000)/1000
-        return int((self.tempsNouveau - self.tempsReference)*1000)/1000
+        tempsNouveau = int(time.time() * 10000)/10000
+        return int((tempsNouveau - self.tempsReference)*10000)/10000
 
+    def setTempsRefence(self, temps) :
+        self.tempsReference = int(time.time() * 10000)/10000 - temps
+        self.tempsStoppe = int(time.time() * 10000)/10000
 
 class Texte : 
 

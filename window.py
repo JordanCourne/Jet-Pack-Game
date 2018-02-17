@@ -1,7 +1,7 @@
 ### - window.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 18/07/2017
+Date de la dernière édition du fichier : 26/07/2017
 """
 
 ### import ###
@@ -17,8 +17,8 @@ class Window :
         self.tailleFenetreH = int(self.tailleFenetreL * self.formatFenetreH / self.formatFenetreL)
             #Affichage Fenetre
         pygame.init()
-        self.window = pygame.display.set_mode((self.tailleFenetreL, self.tailleFenetreH))
-        pygame.display.set_caption("JapGame")
+        self.window = pygame.display.set_mode((self.tailleFenetreL, self.tailleFenetreH), pygame.HWSURFACE)
+        pygame.display.set_caption("Jet Pack Game")
             #Fond
         self.fondBleute = (233,248,255)
         pygame.draw.rect(self.window, self.fondBleute, (0,0, self.tailleFenetreL, self.tailleFenetreH))

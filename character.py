@@ -1,7 +1,7 @@
 ### - character.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 18/07/2017
+Date de la dernière édition du fichier : 26/07/2017
 """
 
 ### import ###
@@ -10,18 +10,18 @@ from pygame.locals import *
 
 class Character :
     
-    def __init__(self, tailleFenetreLargeur, hauteurPersonnage, vitessePerso, fenetre) :
+    def __init__(self, hauteurPersonnage, vitessePerso, fenetre) :
         self.charac = pygame.image.load("perso 1.png").convert_alpha()
 
-        self.posPersoX = int(tailleFenetreLargeur/5)
-        self.posPersoY = int(tailleFenetreLargeur/5)
-        self.vitesse = vitessePerso
+        self.hauteurPerso = self.charac.get_height()
+        self.largeurPerso = self.charac.get_width()
+        self.charac = pygame.transform.smoothscale(self.charac, (hauteurPersonnage, int(hauteurPersonnage * self.hauteurPerso / self.largeurPerso)))
+        self.hauteurPerso = self.charac.get_height()
+        self.largeurPerso = self.charac.get_width()
 
-        self.hauteurPerso = self.charac.get_height()
-        self.largeurPerso = self.charac.get_width()
-        self.charac = pygame.transform.scale(self.charac, (hauteurPersonnage, int(hauteurPersonnage * self.hauteurPerso / self.largeurPerso)))
-        self.hauteurPerso = self.charac.get_height()
-        self.largeurPerso = self.charac.get_width()
+        self.posPersoX = int(fenetre.getTailleFenetreL()/2 - self.largeurPerso/2)
+        self.posPersoY = int(fenetre.getTailleFenetreH() - self.hauteurPerso)
+        self.vitesse = vitessePerso
 
         self.afficherPerso(fenetre)
 
@@ -41,16 +41,33 @@ class Character :
     def afficherPerso(self, fenetre) :
         fenetre.getWindow().blit(self.charac, (self.posPersoX, self.posPersoY))
 
-    def actualiserPerso(self, fenetre) :
+    def actualiserPerso(self, fenetre, dt) :
         self.touchesPresse = pygame.key.get_pressed()
-        if self.touchesPresse[K_UP] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY - self.vitesse) :
-            self.posPersoY -= self.vitesse
-        if self.touchesPresse[K_DOWN] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY + self.vitesse) :
-            self.posPersoY += self.vitesse
-        if self.touchesPresse[K_LEFT] and self.dansCadre(fenetre, self.posPersoX - self.vitesse, self.posPersoY) :
-            self.posPersoX -= self.vitesse
-        if self.touchesPresse[K_RIGHT] and self.dansCadre(fenetre, self.posPersoX + self.vitesse, self.posPersoY) :
-            self.posPersoX += self.vitesse
+        if self.touchesPresse[K_UP] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY - 1.75 * self.vitesse * dt) :
+            self.posPersoY -= 1.75 * self.vitesse * dt
+        elif self.touchesPresse[K_UP] :
+            self.posPersoY = 0
+            
+        if self.touchesPresse[K_DOWN] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY + 0.5 * self.vitesse * dt) :
+            self.posPersoY += 0.5 * self.vitesse * dt
+        elif self.touchesPresse[K_DOWN] :
+            self.posPersoY = fenetre.getTailleFenetreH() - self.hauteurPerso
+            
+        if self.touchesPresse[K_LEFT] and self.dansCadre(fenetre, self.posPersoX - 0.75 * self.vitesse * dt, self.posPersoY) :
+            self.posPersoX -= 0.75 * self.vitesse * dt
+        elif self.touchesPresse[K_LEFT] :
+            self.posPersoX = 0
+        
+        if self.touchesPresse[K_RIGHT] and self.dansCadre(fenetre, self.posPersoX + 0.75 * self.vitesse * dt, self.posPersoY) :
+            self.posPersoX += 0.75 * self.vitesse * dt
+        elif self.touchesPresse[K_RIGHT] :
+            self.posPersoX = fenetre.getTailleFenetreL() - self.largeurPerso
+
+        if self.dansCadre(fenetre, self.posPersoX, self.posPersoY + 0.5 * self.vitesse * dt) :
+            self.posPersoY += 0.5 * self.vitesse * dt
+        else :
+            self.posPersoY = fenetre.getTailleFenetreH() - self.hauteurPerso
+            
         self.afficherPerso(fenetre)
         
     def dansCadre(self, fenetre, posFuturX, posFuturY) :
