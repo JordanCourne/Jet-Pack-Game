@@ -1,7 +1,7 @@
 ### - game.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 25/07/2017
+Date de la dernière édition du fichier : 16/08/2017
 """
 
 ### import ###
@@ -33,6 +33,24 @@ class Event :
                 fenetre.fermerFenetre()
                 quit()
             if event.type == KEYDOWN and event.key == K_p :
+                return True
+            if event.type == ACTIVEEVENT and event.gain == 0 and event.state == 6 :
+                return True
+            if event.type == ACTIVEEVENT and event.gain == 0 and event.state == 2 :
+                return True
+        return False
+
+    def evenementUnPause(fenetre) :
+        for event in pygame.event.get() :
+            if event.type == QUIT :
+                print("Fermeture de la fenêtre")
+                fenetre.fermerFenetre()
+                quit()
+            if event.type == KEYDOWN and event.key == K_p :
+                return True
+            if event.type == ACTIVEEVENT and event.gain == 1 and event.state == 6 :
+                return True
+            if event.type == ACTIVEEVENT and event.gain == 1 and event.state == 2 :
                 return True
         return False
             
