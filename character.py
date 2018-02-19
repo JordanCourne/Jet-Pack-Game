@@ -1,7 +1,7 @@
 ### - character.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 18/02/2018
+Date de la dernière édition du fichier : 19/02/2018
 """
 
 ### import ###
