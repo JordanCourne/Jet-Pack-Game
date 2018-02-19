@@ -1,7 +1,7 @@
 ### - character.py - ###
 """
 Date de la création du fichier : 04/07/2017
-Date de la dernière édition du fichier : 20/08/2017
+Date de la dernière édition du fichier : 18/02/2018
 """
 
 ### import ###
@@ -25,9 +25,11 @@ class Character :
         self.posPersoY = int(fenetre.getTailleFenetreH() - self.hauteurPerso)
         self.vitesse = vitessePerso
 
-        self.compteurFlamme = 0
+        self.touchesPresse = pygame.key.get_pressed()
+
+        self.compteurFlamme = 3
         self.flammes = []
-        self.flammes.append(pygame.image.load("flammes\\flammes000.png").convert_alpha())
+        self.flammes.append(pygame.image.load("Flammes v2\\flammes000.png").convert_alpha())
         hauteurFlammes = self.flammes[0].get_height()
         largeurFlammes = self.flammes[0].get_width()
         hauteurTransformee = int(hauteurPersonnage * 2)
@@ -37,11 +39,11 @@ class Character :
             Event.observateurQuit(fenetre)
             i += 1
             if i < 10 :
-                self.flammes.append(pygame.image.load("flammes\\flammes00"+ str(i) +".png").convert_alpha())
+                self.flammes.append(pygame.image.load("Flammes v2\\flammes00"+ str(i) +".png").convert_alpha())
             elif i < 100 :
-                self.flammes.append(pygame.image.load("flammes\\flammes0"+ str(i) +".png").convert_alpha())
+                self.flammes.append(pygame.image.load("Flammes v2\\flammes0"+ str(i) +".png").convert_alpha())
             else :
-                self.flammes.append(pygame.image.load("flammes\\flammes"+ str(i) +".png").convert_alpha())
+                self.flammes.append(pygame.image.load("Flammes v2\\flammes"+ str(i) +".png").convert_alpha())
             self.flammes[i] = pygame.transform.smoothscale(self.flammes[i], (hauteurTransformee, largeurTransformee))
 
         self.afficherPerso(fenetre)
@@ -65,16 +67,35 @@ class Character :
     def afficherFlammes(self, fenetre) :
         fenetre.getWindow().blit(self.flammes[self.compteurFlamme], (self.posPersoX - (self.largeurPerso/2),self.posPersoY + (self.hauteurPerso/2)))
         self.compteurFlamme += 1
-        if self.compteurFlamme >= 136 :
-            self.compteurFlamme = 0
+        if self.compteurFlamme == 100 :
+            self.compteurFlamme = 30
 
     def actualiserPerso(self, fenetre, dt) :
+        self.touchesPressePrecedent = self.touchesPresse
         self.touchesPresse = pygame.key.get_pressed()
         if self.touchesPresse[K_UP] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY - 1.75 * self.vitesse * dt) :
             self.posPersoY -= 1.75 * self.vitesse * dt
-            self.afficherFlammes(fenetre)
+            if self.touchesPressePrecedent[K_UP] :
+                self.afficherFlammes(fenetre)
+            else :
+                self.compteurFlamme = 3
+                self.afficherFlammes(fenetre)
         elif self.touchesPresse[K_UP] :
             self.posPersoY = 0
+            if self.touchesPressePrecedent[K_UP] :
+                self.afficherFlammes(fenetre)
+            else :
+                self.compteurFlamme = 3
+                self.afficherFlammes(fenetre)
+        elif self.touchesPressePrecedent[K_UP] :
+            if self.compteurFlamme < 30 :
+                self.compteurFlamme = 124
+            else :
+                self.compteurFlamme = 100
+            if self.compteurFlamme < 136 :
+                self.afficherFlammes(fenetre)
+
+        if self.compteurFlamme >= 100 and self.compteurFlamme < 136:
             self.afficherFlammes(fenetre)
             
         if self.touchesPresse[K_DOWN] and self.dansCadre(fenetre, self.posPersoX, self.posPersoY + 0.5 * self.vitesse * dt) :
